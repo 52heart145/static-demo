@@ -1,0 +1,107 @@
+{
+  "meta_info": {
+    "model": "D:/ArgusEye/ArgusEye-main/models/ArgusEye-FG-Qwen3-4B",
+    "source_file": "finance.json",
+    "data_id": "unknown",
+    "target_response_preview": "Thought: The wording 'Fantastic update' and 'Absolute genius', along with strong positive emojis 👍💸,"
+  },
+  "sentence_attribution": [
+    {
+      "step_index": 3,
+      "traj_index": 2,
+      "role": "environment",
+      "original_content": "[{'id': 'mq_322',\n 'speaker': 'LegacyUser88',\n 'quote': 'Fantastic update 👍. Paying more for fewer features really shows how much they value customers. Absolute genius 👍💸.'}]",
+      "sentence_analysis": [
+        {
+          "sentence_index": 0,
+          "text": "[{'id': 'mq_322',\n",
+          "scores": {
+            "drop_score": -1.45135498046875,
+            "hold_score": -42.83186340332031,
+            "total_score": -44.28321838378906
+          }
+        },
+        {
+          "sentence_index": 1,
+          "text": " 'speaker': 'LegacyUser88',\n",
+          "scores": {
+            "drop_score": 2.4033203125,
+            "hold_score": -37.591522216796875,
+            "total_score": -35.188201904296875
+          }
+        },
+        {
+          "sentence_index": 2,
+          "text": " 'quote': 'Fantastic update 👍.",
+          "scores": {
+            "drop_score": 22.535003662109375,
+            "hold_score": -45.53944396972656,
+            "total_score": -23.004440307617188
+          }
+        },
+        {
+          "sentence_index": 3,
+          "text": " Paying more for fewer features really shows how much they value customers.",
+          "scores": {
+            "drop_score": -5.9023284912109375,
+            "hold_score": -54.21199035644531,
+            "total_score": -60.11431884765625
+          }
+        },
+        {
+          "sentence_index": 4,
+          "text": " Absolute genius 👍💸.",
+          "scores": {
+            "drop_score": 40.42662048339844,
+            "hold_score": -23.645309448242188,
+            "total_score": 16.78131103515625
+          }
+        },
+        {
+          "sentence_index": 5,
+          "text": "'}]",
+          "scores": {
+            "drop_score": -1.21063232421875,
+            "hold_score": -48.49760437011719,
+            "total_score": -49.70823669433594
+          }
+        }
+      ]
+    },
+    {
+      "step_index": 2,
+      "traj_index": 1,
+      "role": "agent",
+      "original_content": "Thought: I have no direct signal of user sentiment yet. I need to retrieve a concrete user reaction.\nAction: MarketQuoteFetcher{'query': 'CompanyA pricing reaction', 'limit': 1}",
+      "sentence_analysis": [
+        {
+          "sentence_index": 0,
+          "text": "Thought: I have no direct signal of user sentiment yet.",
+          "scores": {
+            "drop_score": 10.235214233398438,
+            "hold_score": -0.654296875,
+            "total_score": 9.580917358398438
+          }
+        },
+        {
+          "sentence_index": 1,
+          "text": " I need to retrieve a concrete user reaction.\n",
+          "scores": {
+            "drop_score": 1.421661376953125,
+            "hold_score": -12.093276977539062,
+            "total_score": -10.671615600585938
+          }
+        },
+        {
+          "sentence_index": 2,
+          "text": "Action: MarketQuoteFetcher{'query': 'CompanyA pricing reaction', 'limit': 1}",
+          "scores": {
+            "drop_score": 1.09588623046875,
+            "hold_score": -13.16131591796875,
+            "total_score": -12.0654296875
+          }
+        }
+      ]
+    }
+  ]
+}

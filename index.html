@@ -1,0 +1,1362 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>ArgusEye</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --dark-slate: rgb(47, 79, 79);
+      --dark-cyan: rgb(0, 139, 139);
+      --teal: rgb(0, 128, 128);
+      --medium-turquoise: rgb(72, 209, 204);
+      --light-sea: rgb(32, 178, 170);
+      --cornflower: rgb(100, 149, 237);
+      --light-steel: rgb(176, 196, 222);
+      --light-slate: rgb(119, 136, 153);
+      --slate: rgb(112, 128, 144);
+      --dodger: rgb(30, 144, 255);
+      --alice: rgb(240, 248, 255);
+      --royal: rgb(65, 105, 225);
+
+      --text-main: #172027;
+      --text-muted: #60717d;
+      --panel: rgba(255, 255, 255, 0.78);
+      --panel-solid: #ffffff;
+      --border: rgba(112, 128, 144, 0.22);
+      --shadow: 0 18px 45px rgba(47, 79, 79, 0.16);
+      --shadow-soft: 0 10px 28px rgba(47, 79, 79, 0.10);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      color: var(--text-main);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(72, 209, 204, 0.38), transparent 28%),
+        radial-gradient(circle at 85% 12%, rgba(100, 149, 237, 0.34), transparent 30%),
+        radial-gradient(circle at 70% 78%, rgba(176, 196, 222, 0.48), transparent 34%),
+        linear-gradient(135deg, rgb(240, 248, 255) 0%, rgb(225, 237, 245) 40%, rgb(214, 229, 238) 100%);
+      overflow-x: hidden;
+    }
+
+    .shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 292px 1fr;
+    }
+
+    
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 28px 22px;
+      background:
+        linear-gradient(180deg, rgba(47, 79, 79, 0.98), rgba(23, 55, 58, 0.98)),
+        radial-gradient(circle at top, rgba(72, 209, 204, 0.18), transparent 36%);
+      color: white;
+      box-shadow: 10px 0 35px rgba(47, 79, 79, 0.20);
+      overflow: hidden;
+    }
+
+    .sidebar::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.08) 38%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .brand {
+      position: relative;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 34px;
+      z-index: 1;
+    }
+
+    .brand-mark {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      background:
+        linear-gradient(135deg, var(--medium-turquoise), var(--dodger));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-weight: 900;
+      font-size: 23px;
+      box-shadow: 0 16px 35px rgba(72, 209, 204, 0.32);
+    }
+
+    .brand-title {
+      font-size: 27px;
+      font-weight: 850;
+      letter-spacing: 0.4px;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: rgba(240,248,255,0.72);
+      margin-top: 3px;
+    }
+
+    .nav-group {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 30px;
+    }
+
+    .nav-label {
+      font-size: 11px;
+      color: rgba(240,248,255,0.52);
+      text-transform: uppercase;
+      letter-spacing: 1.6px;
+      margin: 0 0 12px 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 13px;
+      border-radius: 14px;
+      margin-bottom: 9px;
+      color: rgba(240,248,255,0.82);
+      background: rgba(255,255,255,0.055);
+      border: 1px solid rgba(255,255,255,0.07);
+      font-size: 14px;
+    }
+
+    .nav-item.active {
+      background:
+        linear-gradient(135deg, rgba(0,139,139,0.95), rgba(72,209,204,0.65));
+      border-color: rgba(72,209,204,0.56);
+      box-shadow: 0 14px 30px rgba(0, 139, 139, 0.28);
+      color: white;
+    }
+
+    .nav-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.12);
+      font-size: 13px;
+    }
+
+    .side-card {
+      position: relative;
+      z-index: 1;
+      margin-top: 35px;
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(240,248,255,0.09);
+      border: 1px solid rgba(240,248,255,0.15);
+      color: rgba(240,248,255,0.78);
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .side-card strong {
+      display: block;
+      color: white;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    
+    .main {
+      padding: 26px 32px 34px;
+    }
+
+    .topbar {
+      height: 72px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+      padding: 0 4px;
+    }
+
+    .breadcrumb {
+      color: var(--slate);
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .page-title {
+      margin: 0;
+      font-size: 32px;
+      letter-spacing: -0.8px;
+      color: #1d2a31;
+    }
+
+    .page-desc {
+      margin: 7px 0 0;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .status-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-pill {
+      min-width: 138px;
+      text-align: center;
+      padding: 10px 15px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--dark-slate);
+      background: rgba(255,255,255,0.72);
+      border: 1px solid rgba(112,128,144,0.18);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .status-pill.success {
+      color: #05605c;
+      background: rgba(72, 209, 204, 0.24);
+      border-color: rgba(32,178,170,0.38);
+    }
+
+    .status-pill.loading {
+      color: #0b5f7f;
+      background: rgba(30,144,255,0.16);
+      border-color: rgba(30,144,255,0.3);
+    }
+
+    .status-pill.error {
+      color: #9b1c1c;
+      background: rgba(255, 220, 220, 0.75);
+      border-color: rgba(180,80,80,0.22);
+    }
+
+    .top-button {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: var(--dark-slate);
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: var(--shadow-soft);
+    }
+
+    
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .metric {
+      position: relative;
+      overflow: hidden;
+      padding: 18px;
+      border-radius: 22px;
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.72);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .metric::after {
+      content: "";
+      position: absolute;
+      right: -34px;
+      top: -34px;
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: rgba(72,209,204,0.22);
+    }
+
+    .metric:nth-child(2)::after {
+      background: rgba(100,149,237,0.22);
+    }
+
+    .metric:nth-child(3)::after {
+      background: rgba(0,139,139,0.22);
+    }
+
+    .metric:nth-child(4)::after {
+      background: rgba(30,144,255,0.18);
+    }
+
+    .metric-label {
+      color: var(--slate);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .metric-value {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--dark-slate);
+    }
+
+    .metric-note {
+      margin-top: 6px;
+      color: var(--light-slate);
+      font-size: 12px;
+    }
+
+    
+    .workflow {
+      margin-bottom: 22px;
+      padding: 18px 20px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.62);
+      border: 1px solid rgba(255,255,255,0.78);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(16px);
+    }
+
+    .workflow-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .workflow-title h2 {
+      margin: 0;
+      font-size: 17px;
+      color: var(--dark-slate);
+    }
+
+    .workflow-title span {
+      color: var(--slate);
+      font-size: 13px;
+    }
+
+    .rail {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .rail-step {
+      position: relative;
+      padding: 15px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(240,248,255,0.96), rgba(255,255,255,0.78));
+      border: 1px solid rgba(176,196,222,0.55);
+    }
+
+    .rail-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-weight: 900;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, var(--teal), var(--light-sea));
+    }
+
+    .rail-step:nth-child(2) .rail-num {
+      background: linear-gradient(135deg, var(--dark-cyan), var(--cornflower));
+    }
+
+    .rail-step:nth-child(3) .rail-num {
+      background: linear-gradient(135deg, var(--royal), var(--dodger));
+    }
+
+    .rail-step:nth-child(4) .rail-num {
+      background: linear-gradient(135deg, var(--dark-slate), var(--teal));
+    }
+
+    .rail-name {
+      font-size: 14px;
+      font-weight: 850;
+      color: #263942;
+    }
+
+    .rail-desc {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--slate);
+      line-height: 1.45;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 390px 1fr;
+      gap: 20px;
+    }
+
+    .panel {
+      border-radius: 24px;
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,0.78);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 18px 20px;
+      background:
+        linear-gradient(90deg, rgba(240,248,255,0.88), rgba(255,255,255,0.52));
+      border-bottom: 1px solid rgba(112,128,144,0.18);
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 18px;
+      color: var(--dark-slate);
+    }
+
+    .panel-desc {
+      margin: 6px 0 0;
+      color: var(--slate);
+      font-size: 13px;
+    }
+
+    .panel-body {
+      padding: 20px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--dark-slate);
+    }
+
+    select,
+    input {
+      width: 100%;
+      padding: 12px 13px;
+      border-radius: 14px;
+      border: 1px solid rgba(112,128,144,0.30);
+      background: rgba(255,255,255,0.82);
+      color: var(--text-main);
+      font-size: 14px;
+      outline: none;
+      transition: all 0.15s ease;
+    }
+
+    select:focus,
+    input:focus {
+      border-color: var(--dark-cyan);
+      box-shadow: 0 0 0 4px rgba(72,209,204,0.18);
+    }
+
+    .actions {
+      display: grid;
+      gap: 11px;
+    }
+
+    .action-btn {
+      width: 100%;
+      border: none;
+      border-radius: 16px;
+      padding: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+      color: white;
+      background: linear-gradient(135deg, var(--dark-slate), var(--teal));
+      box-shadow: 0 10px 26px rgba(47,79,79,0.16);
+      transition: all 0.16s ease;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 30px rgba(47,79,79,0.22);
+    }
+
+    .action-btn.secondary {
+      background: linear-gradient(135deg, var(--dark-cyan), var(--light-sea));
+    }
+
+    .action-btn.blue {
+      background: linear-gradient(135deg, var(--royal), var(--dodger));
+    }
+
+    .action-btn.open {
+      background: linear-gradient(135deg, var(--teal), var(--medium-turquoise));
+    }
+
+    .action-btn.full {
+      background:
+        linear-gradient(135deg, rgb(47,79,79), rgb(0,139,139) 45%, rgb(30,144,255));
+    }
+
+    .action-btn.clear {
+      color: var(--dark-slate);
+      background: rgba(255,255,255,0.82);
+      border: 1px solid rgba(112,128,144,0.24);
+    }
+
+    .btn-index {
+      width: 34px;
+      height: 34px;
+      border-radius: 13px;
+      flex-shrink: 0;
+      background: rgba(255,255,255,0.20);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .clear .btn-index {
+      background: rgba(47,79,79,0.12);
+    }
+
+    .btn-title {
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    .btn-sub {
+      font-size: 12px;
+      opacity: 0.78;
+      margin-top: 2px;
+    }
+
+        .hint {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(240,248,255,0.72);
+      border: 1px dashed rgba(112,128,144,0.35);
+      color: var(--slate);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .attribution-panel {
+      margin-top: 22px;
+      border-radius: 26px;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid rgba(255,255,255,0.9);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+      backdrop-filter: blur(18px);
+    }
+
+    .attribution-head {
+      padding: 18px 22px;
+      background: linear-gradient(90deg, rgba(47,79,79,0.98), rgba(0,139,139,0.92), rgba(100,149,237,0.84));
+      color: white;
+    }
+
+    .attribution-title {
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .attribution-desc {
+      margin-top: 4px;
+      font-size: 13px;
+      opacity: 0.82;
+    }
+
+    #attribution-result {
+      padding: 20px 22px;
+      overflow: auto;
+      max-height: 560px;
+    }
+
+    .attr-section-title {
+      font-size: 15px;
+      font-weight: 850;
+      color: var(--dark-slate);
+      margin-bottom: 12px;
+      padding-left: 10px;
+      border-left: 4px solid var(--teal);
+    }
+
+    .attr-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-bottom: 22px;
+    }
+
+    .attr-table th,
+    .attr-table td {
+      padding: 9px 11px;
+      text-align: left;
+      border-bottom: 1px solid rgba(112,128,144,0.16);
+      vertical-align: top;
+    }
+
+    .attr-table th {
+      background-color: rgba(240,248,255,0.8);
+      color: var(--dark-slate);
+      font-weight: 800;
+    }
+
+    .attr-role {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(72,209,204,0.18);
+      color: #05605c;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+
+    .attr-preview {
+      color: var(--text-main);
+      font-family: monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .attr-sub {
+      display: block;
+      color: var(--light-slate);
+      font-size: 11px;
+      margin-top: 3px;
+    }
+
+    .attr-sent-block {
+      border: 1px solid rgba(112,128,144,0.18);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      background: rgba(240,248,255,0.5);
+    }
+
+    .attr-sent-head {
+      font-weight: 800;
+      color: var(--dark-slate);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .attr-sent-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      border-top: 1px dashed rgba(112,128,144,0.18);
+      padding: 7px 0;
+    }
+
+    .attr-sent-text {
+      flex: 1;
+      font-family: monospace;
+      font-size: 12px;
+      color: var(--text-main);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .attr-sent-scores {
+      flex-shrink: 0;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .tag.drop { background: rgba(30,144,255,0.14); color: #0b5f7f; }
+    .tag.hold { background: rgba(100,149,237,0.16); color: #2c4b7a; }
+    .tag.total { background: rgba(72,209,204,0.18); color: #05605c; }
+
+    .attr-empty {
+      color: var(--slate);
+      font-size: 13px;
+      font-style: italic;
+    }
+
+    .console {
+      height: 450px;
+      background:
+        linear-gradient(180deg, rgba(31,52,54,0.98), rgba(22,38,41,0.98));
+      border-radius: 18px;
+      border: 1px solid rgba(72,209,204,0.22);
+      color: #dffaf6;
+      padding: 16px;
+      font-size: 12.5px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      overflow: auto;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+    }
+
+    .report-panel {
+      margin-top: 22px;
+      border-radius: 26px;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid rgba(255,255,255,0.9);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(18px);
+    }
+
+    .report-head {
+      padding: 18px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background:
+        linear-gradient(90deg, rgba(47,79,79,0.98), rgba(0,128,128,0.88), rgba(30,144,255,0.75));
+      color: white;
+    }
+
+    .report-title {
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .report-desc {
+      margin-top: 4px;
+      font-size: 13px;
+      opacity: 0.78;
+    }
+
+    .report-open {
+      border: 1px solid rgba(255,255,255,0.32);
+      background: rgba(255,255,255,0.14);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    iframe {
+      width: 100%;
+      height: 780px;
+      display: block;
+      border: none;
+      background: white;
+    }
+
+    @media (max-width: 1200px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .rail {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .main {
+        padding: 18px;
+      }
+
+      .topbar {
+        height: auto;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .metrics,
+      .rail {
+        grid-template-columns: 1fr;
+      }
+
+      .page-title {
+        font-size: 26px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">AE</div>
+      <div>
+        <div class="brand-title">ArgusEye</div>
+        <div class="brand-subtitle">Evidence Review Console</div>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Analysis</div>
+
+      <div class="nav-item active">
+        <div class="nav-icon">◆</div>
+        <div>Case Workspace</div>
+      </div>
+
+      <div class="nav-item">
+        <div class="nav-icon">●</div>
+        <div>Attribution Map</div>
+      </div>
+
+      <div class="nav-item">
+        <div class="nav-icon">★</div>
+        <div>Review Reports</div>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Case Files</div>
+
+      <div class="nav-item">
+        <div class="nav-icon">F</div>
+        <div>finance.json</div>
+      </div>
+
+      <div class="nav-item">
+        <div class="nav-icon">R</div>
+        <div>resume.json</div>
+      </div>
+
+      <div class="nav-item">
+        <div class="nav-icon">T</div>
+        <div>transaction.json</div>
+      </div>
+    </div>
+
+        <div class="side-card">
+      <strong>Demo Mode</strong>
+      Pre-generated attribution results.
+      <br>
+      Source: AgenticXAI offline analysis
+      <br>
+      Mode: online demo (no live inference)
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div class="topbar">
+      <div>
+        <div class="breadcrumb">ArgusEye / Case Review / Attribution Workspace</div>
+        <h1 class="page-title">Evidence Attribution Workspace</h1>
+        <p class="page-desc">
+          Review behavioral trajectories, identify high-impact steps, and generate evidence-oriented inspection reports.
+        </p>
+      </div>
+
+      <div class="status-area">
+        <div id="status" class="status-pill">Idle</div>
+        <button class="top-button" onclick="openReportInNewTab()">Open Report</button>
+      </div>
+    </div>
+
+    <section class="metrics">
+      <div class="metric">
+        <div class="metric-label">Case Library</div>
+        <div class="metric-value">3</div>
+        <div class="metric-note">available samples</div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-label">Attribution Mode</div>
+        <div class="metric-value">Step + Sentence</div>
+        <div class="metric-note">two-layer inspection</div>
+      </div>
+
+            <div class="metric">
+        <div class="metric-label">Data Source</div>
+        <div class="metric-value">Pre-gen</div>
+        <div class="metric-note">offline real analysis</div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-label">Report Type</div>
+        <div class="metric-value">HTML</div>
+        <div class="metric-note">interactive view</div>
+      </div>
+    </section>
+
+    <section class="workflow">
+      <div class="workflow-title">
+        <h2>Review Pipeline</h2>
+        <span>Recommended execution order</span>
+      </div>
+
+      <div class="rail">
+        <div class="rail-step">
+          <div class="rail-num">1</div>
+          <div class="rail-name">Trajectory Attribution</div>
+          <div class="rail-desc">Score key roles and steps across the case trajectory.</div>
+        </div>
+
+        <div class="rail-step">
+          <div class="rail-num">2</div>
+          <div class="rail-name">Sentence Attribution</div>
+          <div class="rail-desc">Locate highly influential sentences within top-ranked steps.</div>
+        </div>
+
+        <div class="rail-step">
+          <div class="rail-num">3</div>
+          <div class="rail-name">Report Generation</div>
+          <div class="rail-desc">Compile attribution data into a visual inspection report.</div>
+        </div>
+
+        <div class="rail-step">
+          <div class="rail-num">4</div>
+          <div class="rail-name">Evidence Review</div>
+          <div class="rail-desc">Open the report and inspect the generated attribution map.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Job Configuration</h2>
+          <p class="panel-desc">Select a case and run the attribution workflow.</p>
+        </div>
+
+        <div class="panel-body">
+          <div class="field">
+            <label for="sampleName">Case File</label>
+            <select id="sampleName">
+              <option value="finance">finance.json</option>
+              <option value="resume">resume.json</option>
+              <option value="transaction">transaction.json</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="topK">Top-K Evidence</label>
+            <input id="topK" type="number" value="3" min="1" max="10">
+          </div>
+
+          <div class="actions">
+                        <button class="action-btn" onclick="runComponent()">
+              <div class="btn-index">1</div>
+              <div>
+                <div class="btn-title">View Trajectory Evidence</div>
+                <div class="btn-sub">Show step-level attribution (pre-generated)</div>
+              </div>
+            </button>
+
+                        <button class="action-btn secondary" onclick="runSentence()">
+              <div class="btn-index">2</div>
+              <div>
+                <div class="btn-title">View Sentence Evidence</div>
+                <div class="btn-sub">Show sentence-level impact (pre-generated)</div>
+              </div>
+            </button>
+
+                        <button class="action-btn blue" onclick="generateHtml()">
+              <div class="btn-index">3</div>
+              <div>
+                <div class="btn-title">Open Visualization Report</div>
+                <div class="btn-sub">Load the pre-generated HTML report</div>
+              </div>
+            </button>
+
+                        <button class="action-btn open" onclick="viewHtml()">
+              <div class="btn-index">4</div>
+              <div>
+                <div class="btn-title">View Report Here</div>
+                <div class="btn-sub">Load the report into the workspace</div>
+              </div>
+            </button>
+
+                        <button class="action-btn full" onclick="runFullPipeline()">
+              <div class="btn-index">▶</div>
+              <div>
+                <div class="btn-title">Show All Evidence</div>
+                <div class="btn-sub">Preview trajectory + sentence + report</div>
+              </div>
+            </button>
+
+            <button class="action-btn clear" onclick="clearLog()">
+              <div class="btn-index">×</div>
+              <div>
+                <div class="btn-title">Clear Console</div>
+                <div class="btn-sub">Reset logs and status</div>
+              </div>
+            </button>
+          </div>
+
+                    <div class="hint">
+            提示：本演示为在线 Demo 模式，直接读取预生成的真实分析结果（无实时模型推理）。选择案例后即可查看轨迹归因、句子归因与可视化报告。
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Execution Console</h2>
+          <p class="panel-desc">Backend responses, runtime logs, and generated file paths.</p>
+        </div>
+
+        <div class="panel-body">
+          <pre id="log" class="console">ArgusEye console initialized.</pre>
+        </div>
+      </div>
+    </section>
+
+        <section class="attribution-panel">
+      <div class="attribution-head">
+        <div class="attribution-title">Attribution Evidence</div>
+        <div class="attribution-desc">Trajectory and sentence attribution loaded from pre-generated analysis.</div>
+      </div>
+      <div id="attribution-result" class="attr-empty">
+        Select a case above, then click "View Trajectory Evidence" or "View Sentence Evidence" to load the attribution.
+      </div>
+    </section>
+
+    <section class="report-panel">
+      <div class="report-head">
+        <div>
+          <div class="report-title">Inspection Report</div>
+          <div class="report-desc">The generated attribution visualization will appear below.</div>
+        </div>
+
+        <button class="report-open" onclick="openReportInNewTab()">Open in New Tab</button>
+      </div>
+
+      <iframe id="viewer"></iframe>
+    </section>
+
+  </main>
+</div>
+
+<script>
+    // Static build: all data is loaded from local files under ./data and ./reports.
+  // No backend is used by this page.
+
+  function getSampleName() {
+    return document.getElementById("sampleName").value;
+  }
+
+  function getTopK() {
+    return Number(document.getElementById("topK").value);
+  }
+
+  function setStatus(text, type = "") {
+    const el = document.getElementById("status");
+    el.textContent = text;
+    el.className = "status-pill " + type;
+  }
+
+  function log(message) {
+    const el = document.getElementById("log");
+    el.textContent = message;
+    el.scrollTop = el.scrollHeight;
+  }
+
+  function appendLog(message) {
+    const el = document.getElementById("log");
+    el.textContent += "\n\n" + message;
+    el.scrollTop = el.scrollHeight;
+  }
+
+    function clearLog() {
+    log("ArgusEye console initialized.");
+    setStatus("Idle");
+    const box = document.getElementById("attribution-result");
+    if (box) {
+      box.innerHTML =
+        'Select a case above, then click "View Trajectory Evidence" or "View Sentence Evidence" to load the attribution.';
+      box.className = "attr-empty";
+    }
+  }
+
+  async function postJson(url, body = null) {
+    const options = {
+      method: "POST",
+      headers: {}
+    };
+
+    if (body !== null) {
+      options.headers["Content-Type"] = "application/json";
+      options.body = JSON.stringify(body);
+    }
+
+    const res = await fetch(url, options);
+    return await res.json();
+  }
+
+        // Load the pre-generated attribution data for a case directly from
+    // static JSON files (no backend). Result shape stays compatible with the
+    // FastAPI endpoint so the render functions are unchanged:
+    //   { success, name, trajectory, sentence }
+    // With trajectory == trajectory JSON object, sentence == sentence JSON object.
+    async function fetchCaseData(name) {
+      const trajUrl = `./data/${encodeURIComponent(name)}_trajectory.json`;
+      const sentUrl = `./data/${encodeURIComponent(name)}_sentence.json`;
+
+      const [trajRes, sentRes] = await Promise.all([
+        fetch(trajUrl),
+        fetch(sentUrl)
+      ]);
+
+      const trajOk = trajRes.ok;
+      const sentOk = sentRes.ok;
+
+      // Missing files -> same style of error message the backend would return.
+      if (!trajOk || !sentOk) {
+        const missing = [];
+        if (!trajOk) missing.push(`trajectory file not found: ${trajUrl}`);
+        if (!sentOk) missing.push(`sentence file not found: ${sentUrl}`);
+        return { success: false, error: missing.join("; ") };
+      }
+
+      const trajectory = await trajRes.json();
+      const sentence = await sentRes.json();
+
+      return {
+        success: true,
+        name: name,
+        trajectory: trajectory,
+        sentence: sentence,
+      };
+    }
+
+    // Escape a string for safe insertion into HTML.
+    function esc(s) {
+      return String(s == null ? "" : s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    // Render trajectory-level evidence (step_index, role, preview, llr_score).
+    function renderTrajectory(trajData) {
+      const box = document.getElementById("attribution-result");
+      const steps = (trajData && trajData.trajectory_analysis) || [];
+      if (!steps.length) {
+        box.innerHTML = '<div class="attr-empty">No trajectory attribution steps available.</div>';
+        return;
+      }
+
+      let html =
+        '<div class="attr-section-title">Trajectory Attribution</div>' +
+        '<table class="attr-table"><thead><tr>' +
+        '<th>Step</th><th>Role</th><th>LLR Score</th><th>Content Preview</th>' +
+        '</tr></thead><tbody>';
+
+      for (const st of steps) {
+        const m = st.metrics || {};
+        const llr = (typeof m.llr_score === "number") ? m.llr_score.toFixed(4) : "-";
+        const prob = (typeof m.prob_diff === "number") ? m.prob_diff.toFixed(4) : "-";
+        const diff = (typeof m.raw_prob === "number") ? m.raw_prob.toFixed(4) : "-";
+        html += '<tr>' +
+          '<td>' + esc(st.step_index) + '</td>' +
+          '<td><span class="attr-role">' + esc(st.event_role) + '</span></td>' +
+          '<td>' + esc(llr) + '</td>' +
+          '<td class="attr-preview">' + esc(st.event_content_preview) +
+          '<span class="attr-sub">prob diff: ' + esc(prob) + ' · raw prob: ' + esc(diff) + '</span></td>' +
+          '</tr>';
+      }
+      html += '</tbody></table>';
+      box.className = "";
+      box.innerHTML = html;
+  }
+
+    // Render sentence-level evidence (sentence text, drop/hold/total scores).
+    function renderSentence(sentData, topK) {
+      const box = document.getElementById("attribution-result");
+      const items = (sentData && sentData.sentence_attribution) || [];
+      if (!items.length) {
+        box.innerHTML = '<div class="attr-empty">No sentence attribution entries available.</div>';
+        return;
+      }
+
+      // If rendering into a fresh/empty container, clear any placeholder.
+      if (!box.firstElementChild) {
+        box.innerHTML = "";
+      }
+
+      let html =
+        '<div class="attr-section-title">Sentence Attribution</div>';
+
+      for (const item of items) {
+        const sents = (item.sentence_analysis || []).slice(0, Math.max(1, topK || 3));
+        html +=
+          '<div class="attr-sent-block"><div class="attr-sent-head">' +
+          'Step ' + esc(item.step_index) + ' · Role: ' + esc(item.role) +
+          '</div>';
+        for (const s of sents) {
+          const scores = s.scores || {};
+          html +=
+            '<div class="attr-sent-row"><div class="attr-sent-text">' +
+            esc(s.text) + '</div>' +
+            '<div class="attr-sent-scores">' +
+            '<span class="tag drop">drop ' + (typeof scores.drop_score === "number" ? scores.drop_score.toFixed(2) : "-") + '</span>' +
+            '<span class="tag hold">hold ' + (typeof scores.hold_score === "number" ? scores.hold_score.toFixed(2) : "-") + '</span>' +
+            '<span class="tag total">total ' + (typeof scores.total_score === "number" ? scores.total_score.toFixed(2) : "-") + '</span>' +
+            '</div></div>';
+        }
+        html += '</div>';
+    }
+    box.className = "";
+    box.insertAdjacentHTML('beforeend', html);
+  }
+
+    async function runComponent() {
+    const name = getSampleName();
+
+    setStatus("Loading", "loading");
+    log(`Loading trajectory evidence...\nCase: ${name}.json\nSource: ./data/${name}_trajectory.json`);
+
+    try {
+      const data = await fetchCaseData(name);
+
+      if (!data.success) {
+        log("Lookup failed:\n" + (data.error || "unknown error"));
+        setStatus("Trajectory Failed", "error");
+        return data;
+      }
+
+      renderTrajectory(data.trajectory);
+      log(`Loaded trajectory evidence for: ${name}.json\nSource: pre-generated attribution data (no live model inference).`);
+      setStatus("Trajectory Ready", "success");
+      return data;
+    } catch (err) {
+      log("Request failed:\n" + err);
+      setStatus("Request Failed", "error");
+      return { success: false };
+    }
+  }
+
+    async function runSentence() {
+    const name = getSampleName();
+    const topK = getTopK();
+
+    setStatus("Loading", "loading");
+    log(`Loading sentence evidence...\nCase: ${name}.json\nTop-K display: ${topK}`);
+
+    try {
+      const data = await fetchCaseData(name);
+
+      if (!data.success) {
+        log("Lookup failed:\n" + (data.error || "unknown error"));
+        setStatus("Sentence Failed", "error");
+        return data;
+      }
+
+      renderSentence(data.sentence, topK);
+      log(`Loaded sentence evidence for: ${name}.json\nSource: pre-generated attribution data (no live model inference).`);
+      setStatus("Sentence Ready", "success");
+      return data;
+    } catch (err) {
+      log("Request failed:\n" + err);
+      setStatus("Request Failed", "error");
+      return { success: false };
+    }
+  }
+
+        // Open the static pre-generated visualization report directly.
+  function openReport() {
+    const name = getSampleName();
+    const url = `./reports/${encodeURIComponent(name)}_visualization.html`;
+
+    document.getElementById("viewer").src = url;
+    log(`Loading visualization report:\n${url}\nSource: pre-generated HTML report.`);
+    setStatus("Report Loaded", "success");
+  }
+
+  async function generateHtml() {
+    const name = getSampleName();
+
+    setStatus("Loading", "loading");
+    log(`Preparing visualization report...\nCase: ${name}.json\nLoading pre-generated HTML (no live generation).`);
+
+    // Online demo: directly open the pre-generated report.
+    openReport();
+    setStatus("Report Loaded", "success");
+    return { success: true };
+  }
+
+  function viewHtml() {
+    // Online demo: directly open the pre-generated report.
+    openReport();
+  }
+
+        function openReportInNewTab() {
+    const name = getSampleName();
+    const url = `./reports/${encodeURIComponent(name)}_visualization.html`;
+        // Navigate directly to the static HTML report so it renders as a page
+    // in the browser (same-tab navigation to the report HTML).
+    window.location.href = url;
+  }
+
+    async function runFullPipeline() {
+    const name = getSampleName();
+
+    setStatus("Preview Running", "loading");
+    log(`Full demo preview started.\nCase: ${name}.json`);
+
+    // Step 1: Load and render trajectory evidence.
+    appendLog("Step 1/4: Trajectory evidence");
+    const comp = await runComponent();
+    if (!comp.success) {
+      appendLog("Preview stopped: trajectory evidence failed.");
+      setStatus("Preview Failed", "error");
+      return;
+    }
+
+    // Step 2: Load and render sentence evidence.
+    appendLog("Step 2/4: Sentence evidence");
+    const sent = await runSentence();
+    if (!sent.success) {
+      appendLog("Preview stopped: sentence evidence failed.");
+      setStatus("Preview Failed", "error");
+      return;
+    }
+
+    // Step 3: Load the visualization report.
+    appendLog("Step 3/4: Visualization report");
+    openReport();
+
+    // Step 4: Show usage summary.
+    appendLog("Step 4/4: Demo complete — all evidence loaded from pre-generated data.");
+
+    setStatus("Preview Complete", "success");
+  }
+</script>
+
+</body>
+</html>
